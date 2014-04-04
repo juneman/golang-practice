@@ -19,11 +19,11 @@ func (this *Good) setState(s string) {
 }
 
 func (this *Good) detail() {
-	fmt.Printf("Good id: %d, state:%s\n\n", this.id, this.state)
+	fmt.Printf("Good id: %d, state:%s\n", this.id, this.state)
 }
 
-func product() chan Good {
-	line := make(chan Good)
+func product(capcity int, speed float64) chan Good {
+	line := make(chan Good, capcity)
 
 	go func() {
 		for i := 1; ; i++ {
@@ -33,15 +33,15 @@ func product() chan Good {
 
 			good.detail()
 			line <- *good
-			time.Sleep(1 * time.Second)
+			time.Sleep((time.Duration) ((time.Duration)(1000.0/speed) * time.Millisecond))
 		}
 	}()
 
 	return line
 }
 
-func transport(in chan Good) chan Good {
-	out := make(chan Good)
+func transport(in chan Good, capcity int, speed float64) chan Good {
+	out := make(chan Good, capcity)
 
 	go func() {
 		for {
@@ -50,21 +50,28 @@ func transport(in chan Good) chan Good {
 			good.detail()
 
 			out <- good
+			time.Sleep((time.Duration) ((time.Duration)(1000.0/speed) * time.Millisecond))
 		}
 	}()
 
 	return out
 }
 
-func consummer(in chan Good) {
+func consummer(in chan Good, speed float64) {
 		for {
 			good := <-in
 
 			good.setState("Consuming")
 			good.detail()
+			time.Sleep((time.Duration) ((time.Duration)(1000.0/speed) * time.Millisecond))
 		}
 }
 
 func main() {
-	consummer(transport(product()))
+    capcity := 10
+    product_speed := 15.0
+    trans_speed := 8.0
+    consuming_speed := 12.0
+
+	consummer(transport(product(capcity, product_speed), capcity, trans_speed), consuming_speed)
 }
