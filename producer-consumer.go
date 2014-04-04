@@ -72,6 +72,6 @@ func main() {
     product_speed := 15.0
     trans_speed := 8.0
     consuming_speed := 12.0
-
-	consummer(transport(product(capcity, product_speed), capcity, trans_speed), consuming_speed)
+    
+    consummer(transport(product(capcity, product_speed), capcity, trans_speed), consuming_speed)
 }
